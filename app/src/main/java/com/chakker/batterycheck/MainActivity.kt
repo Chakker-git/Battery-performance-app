@@ -16,6 +16,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        CrashScreen.pending(this)?.let { CrashScreen.show(this, it); return }
         SampleWorker.schedule(applicationContext)
         // Re-read every time we return from Settings (e.g. after granting usage access).
         lifecycleScope.launch {
