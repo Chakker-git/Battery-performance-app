@@ -5,6 +5,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,7 +22,20 @@ jobs:
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
       - name: Build
         run: ./gradlew assembleDebug --stacktrace
+      - name: Check APK exists
+        run: ls -l app/build/outputs/apk/debug/
       - uses: actions/upload-artifact@v4
         with:
           name: battery-check-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+      - name: Publish release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk battery-check-debug.apk
+          gh release create "debug-${{ github.run_number }}" battery-check-debug.apk \
+            --target "${{ github.sha }}" --prerelease \
+            --title "Debug build ${{ github.run_number }}" \
+            --notes "Debug APK built from ${{ github.sha }}"
