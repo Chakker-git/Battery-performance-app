@@ -32,10 +32,12 @@ object DeviceSettingsReader {
             screenTimeoutSec = timeoutMs / 1000,
             refreshRateHz = (dm.getDisplay(0)?.refreshRate ?: 60f).roundToInt(),
             darkMode = night == Configuration.UI_MODE_NIGHT_YES,
-            locationOn = lm.isLocationEnabled,
-            bluetoothOn = Settings.Global.getInt(cr, "bluetooth_on", 0) == 1,
-            wifiOn = wm.isWifiEnabled,
-            dataSaverOn = cm.restrictBackgroundStatus != ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED,
+            locationOn = runCatching { lm.isLocationEnabled }.getOrDefault(false),
+            bluetoothOn = runCatching { Settings.Global.getInt(cr, "bluetooth_on", 0) == 1 }.getOrDefault(false),
+            wifiOn = runCatching { wm.isWifiEnabled }.getOrDefault(false),
+            dataSaverOn = runCatching {
+                cm.restrictBackgroundStatus != ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED
+            }.getOrDefault(false),
         )
     }
 }

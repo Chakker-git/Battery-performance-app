@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Normal permission, auto-granted. Needed to read whether Wi-Fi is on. -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <!-- Special-access permission: user grants it in Settings > Usage access. Used only for app screen-time. -->
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
